@@ -13,15 +13,20 @@ import us.raudi.manli.containers.Bundle;
 import us.raudi.manli.examples.SimpleQuiz;
 import us.raudi.manli.netutils.PortFinder;
 
+/**
+ * MANLi Client.
+ * Connects to a MANLi-server from which it also receives a version of the model. 
+ * It can then send Amends to this model as well as continuously receive Amends made by other clients.
+ * @author Raul Ferreira Fuentes
+ *
+ */
 public class ManliClient {
 	private static final int DISCOVER_TIMEOUT = 3000;
 	
 	private AmendBuffer buffer = new AmendBuffer();
 	
-	Client client = new Client();
-	private Amend amend;
+	private Client client = new Client();
 	private Model model;
-	
 	private InetAddress host;
 	private int host_port;
 	
@@ -37,36 +42,43 @@ public class ManliClient {
 		this(InetAddress.getByName(host), port);
 	}
 	
+	/**
+	 * Starts an instance of the Client. 
+	 * (NOTE: It does not connect to the server until the start method is called)
+	 * @param host address of the host
+	 * @param port port of the host
+	 */
 	public ManliClient(InetAddress host, int port) {
-		this.amend = new Amend();
 		this.host = host;
 		this.host_port = port;
 	}
 	
 	/**
-	 * Starts the client.
-	 * @param c
-	 * @throws InstantiationException
-	 * @throws IllegalAccessException
-	 * @throws IOException
+	 * Starts the client and initiates a connection with the server specified in the constructor.
+	 * @param mClass Class of the model expected to receive from the server.
+	 * @throws InstantiationException if the model class was not possible to instantiate
+	 * @throws IllegalAccessException if class to be instantiated is not accessible
+	 * @throws IOException if connection times out or kryo client cannot be accessed
 	 */
-	public void start(Class<?> c) throws InstantiationException, IllegalAccessException, IOException {
-		// first register kryo serializers
-		Model m = (Model) c.newInstance();
+	public void start(Class<?> mClass) throws InstantiationException, IllegalAccessException, IOException {
+		if(!Model.class.isAssignableFrom(mClass))
+			throw new UnsupportedOperationException("ManliClient.start() expects a class that implements the QuizModel interface");
+		
+		// register kryo serializers
+		Model m = (Model) mClass.newInstance();
 		Kryo kryo = client.getKryo();
 		m.register(kryo);
 		Amend.register(kryo);
 		
-		// initiate client (connect to host);
+		// initiate client and connect to host
 		client.start();
 		client.connect(PortFinder.findUniqueFreePort(), host, host_port, ManliServer.UDP_PORT);
 		
 		
-		// Input Handling
+		// Connection Handling
 		client.addListener(new Listener() {
 			public void received(Connection connection, Object object) {
 				if(object instanceof Model) {
-					System.out.println("Model Received!");
 					model = (Model) object;
 				}
 				else if(object instanceof Amend) {
@@ -78,17 +90,37 @@ public class ManliClient {
 
 		});
 		
-		if(!Model.class.isAssignableFrom(c)) {
-			throw new UnsupportedOperationException("ManliClient.start() expects a class that implements the QuizModel interface");
-		}
-		
-		// initial amend to register with server
-		// TODO: necessary?
-		//// sendAmend();
 	}
 	
 	
 
+	
+	/**
+	 * Disconnects from the server.
+	 */
+	public void disconnect() {
+		client.stop();
+	}
+
+
+	/**
+	 * Sends an amend to the server.
+	 * @param a Amend to be sent
+	 */
+	public void sendAmend(Amend a) {
+		client.sendTCP(a);
+	}
+
+	/**
+	 * Returns the model object that is being updated.
+	 * @return the instance of the model maintained by the client.
+	 */
+	public Model getModel() {
+		return model;
+	}
+	
+	// Checks if received ammend has to be applied, if not it saves it in a queue.
+	// If an amend is applied it also checks if it can empty the queue and applies any consecutive amends.
 	private void handleAmend(Amend a) {
 		buffer.insert(a);
 		System.out.println(model.expectedAmendId());
@@ -98,50 +130,23 @@ public class ManliClient {
 			model.update(valid);
 			model.increaseAmendCounter();
 		}
-	}
-	
-	
-	public void disconnect() {
-		client.stop();
-	}
+	}	
 
-	// find a local server
+
+	/**
+	 * Tries to discover a host in LAN through UDP broadcasting.
+	 * @return the first host to reply in LAN
+	 */
 	public static InetAddress findLocalServer() {
 		return new Client().discoverHost(ManliServer.UDP_PORT, DISCOVER_TIMEOUT);
 	}
-	// find a list of local servers
+
+
+	/**
+	 * Tries to discover hosts in LAN through UDP broadcasting.
+	 * @return A list of hosts available in LAN.
+	 */
 	public static List<InetAddress> findLocalServers() {
 		return new Client().discoverHosts(ManliServer.UDP_PORT, DISCOVER_TIMEOUT);
-	}
-	
-	public void sendAmend(Amend a) {
-		client.sendTCP(a);
-	}
-	
-	
-	public Model getModel() {
-		return model;
-	}
-	
-	public Bundle getBundle() {
-		return amend;
-	}
-	
-	
-	
-
-	public static void main(String[] args) throws IOException, InstantiationException, IllegalAccessException, InterruptedException {
-		
-		ManliClient c = new ManliClient("192.168.178.41");
-		System.out.println( ManliClient.findLocalServers().size() );
-		c.start(SimpleQuiz.class);
-		
-		
-		while(true) {
-			Thread.sleep(5000);
-			Amend a = new Amend();
-			a.putBool("buzz", true);
-			c.sendAmend(a);
-		}
 	}
 }

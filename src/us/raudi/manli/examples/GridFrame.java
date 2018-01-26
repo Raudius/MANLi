@@ -66,7 +66,7 @@ public class GridFrame extends JFrame implements Runnable {
 	public static void main(String[] args) throws IOException, InstantiationException, IllegalAccessException, InterruptedException {
 		
 		ManliServer server = new ManliServer(new GridModel(8,8));
-		new Thread(server).start();
+		server.start();
 		
 		Thread.sleep(2000);
 		

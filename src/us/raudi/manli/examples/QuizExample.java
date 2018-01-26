@@ -15,7 +15,7 @@ public class QuizExample {
 		
 		// Give model to server
 		ManliServer host = new ManliServer(quiz);
-		new Thread(host).start();
+		host.start();
 		
 		// give time for server thread to initiate
 		try {

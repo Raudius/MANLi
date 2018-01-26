@@ -3,6 +3,14 @@ package us.raudi.manli.netutils;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+/**
+ * THIS CLASS IS USED IN CONJUCTION WITH AddressEncoder BUT IS NOT YET IMPLEMENTED ANYWHERE
+ * ELSE IN THE LIBRARY.
+ * 
+ * Addres:Port pair
+ * @author Raul Ferreira Fuentes
+ *
+ */
 public class Address {
 	private InetAddress ip;
 	private int port;

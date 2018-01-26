@@ -2,8 +2,8 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>us.raudi</groupId>
   <artifactId>manli</artifactId>
-  <version>0.2.1-SNAPSHOT</version>
-  <description>MVC-like networking framework.</description>
+  <version>0.1</version>
+  <description>Model Amend Networking Library.</description>
   <build>
     <sourceDirectory>src</sourceDirectory>
     <plugins>

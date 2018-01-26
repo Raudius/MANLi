@@ -9,33 +9,50 @@ import com.esotericsoftware.kryonet.FrameworkMessage;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 
-import us.raudi.manli.examples.SimpleQuiz;
 
 
-
-public class ManliServer extends Observable implements Runnable {
+/**
+ * MANLi server.
+ * Maintains an instance of a Model and synchronises it across multiple clients.
+ * @author Raul Ferreira Fuentes
+ *
+ */
+public class ManliServer extends Observable{
 
 	public static final int TCP_PORT_DEFAULT = 57343;
 	public static final int UDP_PORT = 57342;
 	
-	private static final long INTERVAL_UPDATE = 1000;
 	private Server server = new Server();
 	private int port;
 	private Model model;
 	
 	
+	/**
+	 * Starts a server on port: ManliServer.TCP_PORT_DEFAULT
+	 * @param model instance of model to be updated by clients
+	 */
 	public ManliServer(Model model) {
 		this(model, TCP_PORT_DEFAULT);
 	}
 	
+	/**
+	 * Starts a server on the specified port.
+	 * @param model instance of model to be updated by clients
+	 * @param port TCP port in which the server will accept client requests.
+	 */
 	public ManliServer(Model model, int port) {
 		this.model = model;
 		this.port = port;
 	}
 	
-	public void init() throws IOException {
-		server.start(); // initiate server
+	
+	/**
+	 * Starts the server and listens for incomming connectons.
+	 */
+	public void start() {
+		server.start();
 
+		// define how to handle connections
 		addListeners();
 
 		// register objects for serialization
@@ -44,7 +61,18 @@ public class ManliServer extends Observable implements Runnable {
 		Amend.register(kryo);
 		
 		
-		server.bind(port, UDP_PORT); // bind ports for server
+		try {
+			server.bind(port, UDP_PORT);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+	}
+	
+	/**
+	 * Stops the server and disconects all clients.
+	 */
+	public void stop() {
+		server.stop();
 	}
 	
 
@@ -52,40 +80,23 @@ public class ManliServer extends Observable implements Runnable {
 		server.sendToAllTCP(a);
 	}
 	
-	
+	/**
+	 * Port in which the server is listening for TCP connections.
+	 * @return TCP port of the server.
+	 */
 	public int getPort() {
 		return port;
 	}
 	
 	
-	@Override
-	public void run() {
-		try {
-			init();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		while(true) {
-			try {
-				Thread.sleep(INTERVAL_UPDATE);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-
-			//System.out.println(port);
-			//System.out.println(model);
-		}	
-	}
 	
-	/* Creates listeners to deal with incomming connections */
+	/* Creates listeners to deal with incoming connections */
 	private void addListeners() {
 		// server listener
 		server.addListener(new Listener() {
 			public void received(Connection connection, Object obj) {
 				if(obj instanceof FrameworkMessage) {
 					// received framewowrk message (Kryonet.FrameworkMessage) (keep-alives etc.)
-					// TODO: Action required (??)
 				}
 				else if ((obj instanceof Amend)) {
 					boolean changed = model.amend(connection, (Amend) obj);
@@ -109,7 +120,6 @@ public class ManliServer extends Observable implements Runnable {
 				try {
 					Thread.sleep(500);
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				server.sendToTCP(connection.getID(), model);
@@ -119,10 +129,5 @@ public class ManliServer extends Observable implements Runnable {
 				model.removeClient(connection);
 			}
 		});
-	}
-	
-	public static void main(String[] args) {
-		Thread t = new Thread(new ManliServer( new SimpleQuiz() ));
-		t.start();
 	}
 }

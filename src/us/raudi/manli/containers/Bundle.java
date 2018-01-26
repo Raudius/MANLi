@@ -4,7 +4,11 @@ import java.util.HashMap;
 import java.util.Vector;
 
 import com.esotericsoftware.kryo.Kryo;
-
+/**
+ * Map-like Data Structure from which you can add and retrieve multiple primitives for a given key.
+ * @author Raul Ferreira Fuentes
+ *
+ */
 public class Bundle {
 	private HashMap<String, Object> map = new HashMap<>();
 
@@ -100,31 +104,5 @@ public class Bundle {
 		k.register(Bundle.class);
 		k.register(HashMap.class);
 		k.register(Vector.class);
-	}
-	
-	
-	public static void main(String[] args) {
-		Bundle b = new Bundle();
-		
-		b.putBool("bool", true);
-		b.putByte("Byte", (byte) 'a');
-		b.putChar("char", 'a');
-		b.putDouble("Double", 3.14);
-		b.putFloat("Float", 3.14f);
-		b.putInt("int", 42);
-		b.putLong("Long", 42L);
-		b.putShort("Short", (short) 1);
-		b.putString("string", "hello world");
-		b.putString("string", "hello world!");
-
-		System.out.println(  b.getBool("bool")  );
-		System.out.println(  b.getByte("Byte")  );
-		System.out.println(  b.getChar("char")  );
-		System.out.println(  b.getDouble("Double")  );
-		System.out.println(  b.getFloat("Float")  );
-		System.out.println(  b.getInt("int")  );
-		System.out.println(  b.getLong("Long")  );
-		System.out.println(  b.getShort("Short")  );
-		System.out.println(  b.getString("string")  );
 	}
 }

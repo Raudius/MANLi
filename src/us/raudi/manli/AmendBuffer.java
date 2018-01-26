@@ -2,6 +2,13 @@ package us.raudi.manli;
 
 import java.util.LinkedList;
 
+/**
+ * Priority queue implementation used to keep a buffer of the out-of-sync Amends.
+ * Lower-IDs are sent to the front of the Queue.
+ * 
+ * @author Raul Ferreira Fuentes
+ *
+ */
 public class AmendBuffer {
 	private LinkedList<Amend> buffer = new LinkedList<>();
 

@@ -2,7 +2,15 @@ package us.raudi.manli.netutils;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
+/**
+ * (CONCEPT CLASS)
+ * This class is a work in progress.
+ * 
+ * This class encodes an Address:Port pair into a more readable string.
+ * The encoded string can then be converted back into an address:port pair.
+ * @author Raul Ferreira Fuentes
+ *
+ */
 public class AddressEncoder {
 	private static final int BASE_ENCODE = 36;
 	
