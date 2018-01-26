@@ -29,7 +29,7 @@ public class QuizExample {
 				
 		for(int i=0; i<names.length; i++) {
 			ManliClient c = new ManliClient("localhost", host.getPort());
-			c.start(SimpleQuiz.class);
+			c.connect(SimpleQuiz.class);
 			
 			Amend a = new Amend();
 			a.putString("name", names[i]);

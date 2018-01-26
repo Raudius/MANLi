@@ -34,9 +34,4 @@ public class AmendBuffer {
 	public boolean isEmpty() {
 		return buffer.isEmpty();
 	}
-	
-	@Override
-	public String toString() {
-		return buffer.toString();
-	}
 }

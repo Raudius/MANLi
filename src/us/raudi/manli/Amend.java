@@ -14,7 +14,7 @@ import us.raudi.manli.containers.Bundle;
  */
 public class Amend extends Bundle{
 	// Amend id is determined by server to establish Amend order.
-	protected Integer id = -1;
+	protected int id = -1;
 	protected int clientID = -1;
 	
 	

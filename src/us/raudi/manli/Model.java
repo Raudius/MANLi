@@ -4,11 +4,11 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Connection;
 /**
  * Defines the Model contract.
- * @author Raudius
+ * @author Raul Ferreira Fuentes
  *
  */
 public abstract class Model {
-	private int amend_cnt = 0;
+	protected int amend_cnt = 0;
 	
 	/**
 	 * Update the model with data from a client.
@@ -31,7 +31,7 @@ public abstract class Model {
 	public abstract void removeClient(Connection con);
 	
 	/**
-	 * Register all referenced objects for Kryo serialization.
+	 * Register all field objects for Kryo serialization.
 	 */
 	public void register(Kryo k) {
 		k.register(Model.class);
@@ -44,13 +44,5 @@ public abstract class Model {
 		data.id = amend_cnt++; 
 		data.clientID = con.getID();
 		return update(data);
-	}
-	
-	protected int expectedAmendId() {
-		return amend_cnt;
-	}
-	
-	protected void increaseAmendCounter() {
-		amend_cnt++;
 	}
 }

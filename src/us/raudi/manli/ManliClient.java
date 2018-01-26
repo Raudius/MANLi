@@ -60,9 +60,9 @@ public class ManliClient {
 	 * @throws IllegalAccessException if class to be instantiated is not accessible
 	 * @throws IOException if connection times out or kryo client cannot be accessed
 	 */
-	public void start(Class<?> mClass) throws InstantiationException, IllegalAccessException, IOException {
+	public void connect(Class<?> mClass) throws InstantiationException, IllegalAccessException, IOException {
 		if(!Model.class.isAssignableFrom(mClass))
-			throw new UnsupportedOperationException("ManliClient.start() expects a class that implements the QuizModel interface");
+			throw new UnsupportedOperationException("ManliClient.start expects a class that implements the Model interface");
 		
 		// register kryo serializers
 		Model m = (Model) mClass.newInstance();
@@ -123,12 +123,11 @@ public class ManliClient {
 	// If an amend is applied it also checks if it can empty the queue and applies any consecutive amends.
 	private void handleAmend(Amend a) {
 		buffer.insert(a);
-		System.out.println(model.expectedAmendId());
-		System.out.println(buffer);
-		while(!buffer.isEmpty() && buffer.top().id == model.expectedAmendId()) {
+
+		while(!buffer.isEmpty() && buffer.top().id == model.amend_cnt) {
 			Amend valid = buffer.dequeue();
 			model.update(valid);
-			model.increaseAmendCounter();
+			model.amend_cnt++;
 		}
 	}	
 

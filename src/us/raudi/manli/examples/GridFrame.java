@@ -73,7 +73,7 @@ public class GridFrame extends JFrame implements Runnable {
 		
 		for(int i=0; i<3; i++) {
 			ManliClient client = new ManliClient("localhost", server.getPort());
-			client.start(GridModel.class);
+			client.connect(GridModel.class);
 			
 	
 			Thread.sleep(2000);

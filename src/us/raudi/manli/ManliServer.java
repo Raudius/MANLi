@@ -115,7 +115,6 @@ public class ManliServer extends Observable{
 
 
 			public void connected(Connection connection) {
-				System.out.println("CLIENT CONNECTED");
 				model.addClient(connection);
 				try {
 					Thread.sleep(500);
