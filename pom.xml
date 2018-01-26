@@ -15,17 +15,39 @@
           <target>1.7</target>
         </configuration>
       </plugin>
+      <plugin>
+	      <groupId>org.apache.maven.plugins</groupId>
+	      <artifactId>maven-javadoc-plugin</artifactId>
+	      <version>2.9.1</version>
+	      <executions>
+	        <execution>
+	          <id>attach-javadocs</id>
+	          <goals>
+	            <goal>jar</goal>
+	          </goals>
+	        </execution>
+	      </executions>
+	    </plugin>
     </plugins>
   </build>
-  <dependencies>
-
-	  
+  
+ <developers>
+		<developer>
+			<id>Raudius</id>
+			<name>Raul Ferreira Fuentes</name>
+			<email>r.ferreira.fuentes@gmail.com</email>
+			<organization>Raudius</organization>
+			<organizationUrl>http://raudi.us</organizationUrl>
+			<timezone>GMT+1</timezone>
+		</developer>
+	</developers>
+	
+	
+  <dependencies>	  
 	<dependency>
 	    <groupId>com.esotericsoftware</groupId>
 	    <artifactId>kryonet</artifactId>
 	    <version>2.22.0-RC1</version>
-	</dependency>
-	
+	</dependency>	
   </dependencies>
-  <name>Net</name>
 </project>
